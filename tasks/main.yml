@@ -1,8 +1,8 @@
 ---
 # tasks file for chrisjohnson00.jackett
 
-- name: Check if jackett version exists in /opt     
-  stat: 
+- name: Check if jackett version exists in /opt
+  stat:
     path: "/opt/jackett/{{ chrisjohnson00_jackett_version }}"
   register: jackett_install_location
 
@@ -35,6 +35,12 @@
     repo: deb http://download.mono-project.com/repo/ubuntu stable-bionic main
     state: present
   when: ansible_distribution_major_version == "18"
+
+- name: "adding repo for mono5 for ubuntu 20 & 21"
+  apt_repository:
+    repo: deb https://download.mono-project.com/repo/ubuntu stable-focal main
+    state: present
+  when: ansible_distribution_major_version == "20" or ansible_distribution_major_version == "21"
 
 - name: Only run apt-get update if the last one is more than 3600 seconds ago
   apt:
@@ -84,7 +90,7 @@
     group: "{{ chrisjohnson00_jackett_user }}"
   when: chrisjohnson00_jackett_load_indexers
   notify:
-      - restart_jackett
+    - restart_jackett
 
 - name: create configurations
   template:
